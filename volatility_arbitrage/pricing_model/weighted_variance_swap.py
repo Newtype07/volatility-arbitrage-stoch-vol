@@ -311,11 +311,15 @@ class GammaSwap(WeightedVarianceSwap):
         f_0: ARRAY,
         f_t: ARRAY,
     ) -> ARRAY:
-        return (
-            (f_t - f_0)
-            / f_0
-            * (self.price(imp_var=imp_var_t, tau=tau_t) - self.price(imp_var=imp_var_0, tau=tau_0))
+
+        exp_imp_var_t = predict_var(
+            var=imp_var_0, time_delta=tau_0 - tau_t, model_params=self.market_model.imp_model
         )
+        # the Delta we hold should minimize the P&L. Therefore, we use expected Gamma swap price to hedge
+        g_t = self.price(imp_var=imp_var_t, tau=tau_t)
+        exp_g_t = self.price(imp_var=exp_imp_var_t, tau=tau_t)
+        # If we held instantaneous Delta at t=0, vanna P&L would be (f_t - f_0) / f_0 * (g_t - g_0)
+        return (f_t - f_0) / f_0 * (g_t - exp_g_t)
 
     @staticmethod
     def gamma_pnl(*, f_0: ARRAY, f_t: ARRAY) -> ARRAY:

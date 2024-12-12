@@ -1,7 +1,6 @@
 """interface of pricing model"""
 
-from dataclasses import dataclass
-from typing import TypedDict
+from dataclasses import asdict, dataclass
 
 import numpy as np
 import numpy.typing as npt
@@ -41,8 +40,9 @@ class MarketModel:
         assert abs(self.rho_real_var_imp_var) <= 1
 
 
-class StrategyPnl(TypedDict):
-    """strategy pnl dictionary"""
+@dataclass
+class StrategyPnl:
+    """strategy pnl class"""
 
     total_pnl: ARRAY
     var_vega_pnl: ARRAY
@@ -50,6 +50,26 @@ class StrategyPnl(TypedDict):
     vanna_pnl: ARRAY
     gamma_pnl: ARRAY
     vega_hedge_pnl: ARRAY
+
+    def __add__(self, other: "StrategyPnl") -> "StrategyPnl":
+        """Dynamically add two StrategyPnl objects using asdict()."""
+        if not isinstance(other, StrategyPnl):
+            raise TypeError(f"Cannot add {type(other)} to StrategyPnl")
+        self_dict = asdict(self)
+        other_dict = asdict(other)
+
+        result = {key: value + other_dict[key] for key, value in self_dict.items()}
+        return StrategyPnl(**result)
+
+    def __sub__(self, other: "StrategyPnl") -> "StrategyPnl":
+        """Dynamically subtract two StrategyPnl objects using asdict()."""
+        if not isinstance(other, StrategyPnl):
+            raise TypeError(f"Cannot sub {type(other)} to StrategyPnl")
+        self_dict = asdict(self)
+        other_dict = asdict(other)
+
+        result = {key: value - other_dict[key] for key, value in self_dict.items()}
+        return StrategyPnl(**result)
 
 
 @dataclass(frozen=True)

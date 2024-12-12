@@ -1,6 +1,6 @@
 """Heston model"""
 
-# pylint: disable=line-too-long,too-many-arguments,too-many-locals
+# pylint: disable=line-too-long,too-many-arguments,too-many-locals,too-many-positional-arguments
 
 from typing import Tuple, Union
 

@@ -9,7 +9,7 @@ authors = [
     { name="Junsu Park", email="junsu489@gmail.com" }
 ]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 
 [tool.setuptools.packages.find]
 where = ["volatility_arbitrage"]
